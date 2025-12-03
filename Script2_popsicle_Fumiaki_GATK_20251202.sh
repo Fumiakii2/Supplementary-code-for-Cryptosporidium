@@ -1,38 +1,23 @@
 #!/bin/sh
-
-##ファイル名
 #PBS -q JOB
-
-##使用CPU数とノード数
 #PBS -l select=1:ncpus=24:mem=735gb:vmem=735gb
 #PBS -l walltime=162:00:00
-##Job名を入力
 job_name=Popsicle_GATK
 #PBS -N ${job_name}
 
 ##module load numatools
-
-##Working directoryを入力
 Workdir=/user/immpara/fumiakii/Exp/Project/NIH/popsicle
 
 
 
 cd ${Workdir}
 mkdir UGE-output
-
-#環境変数をロード
 source ~/.bashrc
 
 # Merge the output of the script, and any error messages generated to one file
 #PBS -j oe
 # Send the output of the script to a directory called 'UGE-output' in the working directory
 #PBS -o UGE-output/
-
-## Send mail when the job is submitted, and when the job completes
-#PBS -m abe
-##ユーザーのメールアドレスを入力
-#PBS -M fihara@biken.osaka-u.ac.jp
-
 ##Above text was adopted from user manual A
 ###############################################################################
 
@@ -130,7 +115,6 @@ java -Xmx730G -jar $BIN/LPDtools.jar PerformKmeansClustering -i ${RUND}/${RUN}_p
 for i in {2..9};do
     sed -e "21 s/.*/${i}/g" ${RUND}/Popsicle_clusters > ${RUND}/Popsicle_clusters_${i}
 
-
     # step 10 find local ancestries using Popsicle, n is window size.  start with 500
     #Here, -i is the POPSICLE baseline file generated in Step 7. -j is the clusters file generated in Step 9. -o is the output ancestry file with local ancestry information. -k is the baseline ARFF file generated in Step 8. -l is the directory where temporary files are placed.
     #Mix_6_5K: 6 is coming from number of cluster and 1k is the -n number which is the block size in bp. To change the block size, open the FilteredPopsicleBaselineSampled.clusters (Step9) file and change the cluster value and rerun the bottom 3 commands.
@@ -165,7 +149,6 @@ for i in {2..9};do
             -j ${RUND}/Popsicle_clusters_${i}
     done
 
-
     echo "To generate circos plot, create an output folder called circos"
     for popsicle_win in ${popsicle_wins[@]}; do
     mkdir ${RUND}/circos_${popsicle_win}_${i}
@@ -177,7 +160,6 @@ for i in {2..9};do
 done
 
 # Before getting circos plot, review http://circos.ca/documentation/tutorials/configuration/
-
 echo "Circos"
 conda activate circos
 circos -conf circos.conf -outputfile 10000_3.png
